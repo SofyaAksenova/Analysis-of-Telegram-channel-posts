@@ -4,9 +4,9 @@ import datetime
 import parse_chatgpt as gpt
 import json
 
-# api_id = 21176473
-# api_hash = 'c34ec8b780f6fe608fe5d1b91c07d4a4'
-phone = '+79924099954'
+# api_id = ########
+# api_hash = '################################'
+phone = '+###########'
 chat_id = -1001071195907
 
 # при первом запуске кода в переменной app создаем новую сессию my_account в telegram,
@@ -53,17 +53,11 @@ def count_tags(content):
 async def parse():
     result = []
 
-    with open('tg_data.json', 'r', encoding='utf-8') as outfile:
-        result = json.load(outfile)
-
     # переменная для подсчета количества медиа в посте
     count = 0
 
-    # переменные, позволяющие задать количество постов, которые необходимо обработать
-    # limit = 116
-    # offset = 1429
-    limit = 2500
-    offset = 0
+    # переменная, позволяющая задать количество постов, которые необходимо обработать
+    limit = 1000
 
     # две переменные ниже используются для отслеживания прогресса обработки постов
     loading1 = 100 / limit
@@ -79,7 +73,7 @@ async def parse():
     # и записываем полученный текст в соответствующую переменную text.
     # далее, так как caption в качестве текста поста относится только к первому медиа в посте,
     # мы не записываем данные об остальных медиа, но подсчитываем их в переменной count
-    async for message in app.get_chat_history(chat_id, limit=limit, offset=offset):
+    async for message in app.get_chat_history(chat_id, limit=limit):
         one_message = {}
         text = ""
 
@@ -113,10 +107,6 @@ async def parse():
             # добавляем в массив постов словарь текущего обрабатываемого поста с собранными данными
             result.append(one_message)
 
-            # записываем результат в файл в формате json
-            with open('tg_data.json', 'w', encoding='utf-8') as outfile:
-                outfile.write(json.dumps(result, ensure_ascii=False, indent=2))
-
             count = 0
             if loading < 100:
                 print(round(loading, 2), "%", sep='')
@@ -128,5 +118,9 @@ async def parse():
 
     print('100%')
     print('Done')
+
+    # записываем результат в файл в формате json
+    with open('json.json', 'w', encoding='utf-8') as outfile:
+        outfile.write(json.dumps(result, ensure_ascii=False, indent=2))
 
 app.run(parse())
